@@ -39,14 +39,11 @@ impl UnixListener {
 
         if config.reuse_port {
             // Ignore unsupported error for UNIX domain sockets
-            sys_listener.set_reuse_port(true).or_else(|e| {
-                if e.raw_os_error().is_some_and(|code| code == libc::ENOTSUP) {
-                    eprintln!("[listener] set_reuse_port failed: {e}");
-                    Ok(())
-                } else {
-                    Err(e)
+            if let Err(e) = sys_listener.set_reuse_port(true) {
+                if e.raw_os_error() != Some(libc::ENOTSUP) {
+                    return Err(e);
                 }
-            })?;
+            }
         }
         if config.reuse_addr {
             sys_listener.set_reuse_address(true)?;

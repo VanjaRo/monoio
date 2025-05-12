@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '**.md'
       - '**.png'
+  workflow_dispatch:
 
 env:
   TOOLCHAIN_PROFILE: minimal
