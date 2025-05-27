@@ -1,0 +1,2 @@
+[target.loongarch64-unknown-linux-gnu]
+rustflags = ["-C", "tls-model=local-exec"]

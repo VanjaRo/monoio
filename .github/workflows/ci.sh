@@ -9,7 +9,7 @@ if [ "${NO_RUN}" != "1" ] && [ "${NO_RUN}" != "true" ]; then
         export CARGO_NET_RETRY=5
         export CARGO_NET_TIMEOUT=10
 
-        cargo install cross --git "https://github.com/cross-rs/cross" --rev "c7dee4d008475ce1c140773cbcd6078f4b86c2aa"
+        cargo install cross --git https://github.com/cross-rs/cross
         CARGO=cross
 
         cargo clean

@@ -250,21 +250,25 @@ impl<T: IoBufMut> OpAble for RecvMsg<T> {
                 fd,
                 SIO_GET_EXTENSION_FUNCTION_POINTER,
                 &WSAID_WSARECVMSG as *const _ as *const std::ffi::c_void,
-                std::mem::size_of::<GUID> as usize as u32,
+                std::mem::size_of::<GUID>() as u32,
                 &mut wsa_recv_msg as *mut _ as *mut std::ffi::c_void,
                 std::mem::size_of::<LPFN_WSARECVMSG>() as _,
                 &mut dw_bytes,
                 std::ptr::null_mut(),
                 None,
             );
-            if r == SOCKET_ERROR || wsa_recv_msg.is_none() {
+            if r == SOCKET_ERROR {
                 panic!(
                     "init WSARecvMsg failed with {}",
                     io::Error::from_raw_os_error(WSAGetLastError())
-                )
-            } else {
-                assert_eq!(dw_bytes, std::mem::size_of::<LPFN_WSARECVMSG>() as _);
-                wsa_recv_msg.unwrap()
+                );
+            }
+            match wsa_recv_msg {
+                Some(func) => {
+                    assert_eq!(dw_bytes, std::mem::size_of::<LPFN_WSARECVMSG>() as _);
+                    func
+                }
+                None => panic!("init WSARecvMsg failed: extension function pointer is None"),
             }
         });
         let mut recved = 0;
